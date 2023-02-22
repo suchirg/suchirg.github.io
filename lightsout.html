@@ -1,172 +1,119 @@
-<!DOCTYPE HTML>
-<!--
-	Hyperspace by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
--->
-<html>
-	<head>
-		<title>Suchir Gupta's Portfolio</title>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="assets/css/main.css" />
-		<link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
-		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
-	</head>
-	<body class="is-preload">
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Unity WebGL Player | p2-suchirg</title>
+    <link rel="shortcut icon" href="TemplateDataLightsOut/favicon.ico">
+    <link rel="stylesheet" href="TemplateDataLightsOut/style.css">
+  </head>
+  <body>
+    <div id="unity-container" class="unity-desktop">
+      <canvas id="unity-canvas" width=960 height=600></canvas>
+      <div id="unity-loading-bar">
+        <div id="unity-logo"></div>
+        <div id="unity-progress-bar-empty">
+          <div id="unity-progress-bar-full"></div>
+        </div>
+      </div>
+      <div id="unity-warning"> </div>
+      <div id="unity-footer">
+        <div id="unity-webgl-logo"></div>
+        <div id="unity-fullscreen-button"></div>
+        <div id="unity-build-title">p2-suchirg</div>
+      </div>
+    </div>
+    <script>
+      var container = document.querySelector("#unity-container");
+      var canvas = document.querySelector("#unity-canvas");
+      var loadingBar = document.querySelector("#unity-loading-bar");
+      var progressBarFull = document.querySelector("#unity-progress-bar-full");
+      var fullscreenButton = document.querySelector("#unity-fullscreen-button");
+      var warningBanner = document.querySelector("#unity-warning");
 
-		<!-- Header -->
-			<header id="header">
-				<a href="index.html" class="title">Suchir Gupta's Portfolio</a>
-				<nav>
-					<ul>
-						<li><a href="index.html">Home</a></li>
-						<li><a href="gamedev.html" class="active">Game Development</a></li>
-					</ul>
-				</nav>
-			</header>
+      // Shows a temporary message banner/ribbon for a few seconds, or
+      // a permanent error message on top of the canvas if type=='error'.
+      // If type=='warning', a yellow highlight color is used.
+      // Modify or remove this function to customize the visually presented
+      // way that non-critical warnings and error messages are presented to the
+      // user.
+      function unityShowBanner(msg, type) {
+        function updateBannerVisibility() {
+          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
+        }
+        var div = document.createElement('div');
+        div.innerHTML = msg;
+        warningBanner.appendChild(div);
+        if (type == 'error') div.style = 'background: red; padding: 10px;';
+        else {
+          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
+          setTimeout(function() {
+            warningBanner.removeChild(div);
+            updateBannerVisibility();
+          }, 5000);
+        }
+        updateBannerVisibility();
+      }
 
-		<!-- Wrapper -->
-			<div id="wrapper">
+      var buildUrl = "BuildLightsOut";
+      var loaderUrl = buildUrl + "/WebGL_Build_Disabled.loader.js";
+      var config = {
+        dataUrl: buildUrl + "/WebGL_Build_Disabled.data",
+        frameworkUrl: buildUrl + "/WebGL_Build_Disabled.framework.js",
+        codeUrl: buildUrl + "/WebGL_Build_Disabled.wasm",
+        streamingAssetsUrl: "StreamingAssetsLightsOut",
+        companyName: "DefaultCompany",
+        productName: "p2-suchirg",
+        productVersion: "0.1.0",
+        showBanner: unityShowBanner,
+      };
 
-				<!-- Main -->
-					<section id="main" class="wrapper">
-						<div class="inner">
-							<h1 class="major">Lights Out</h1>
-							<p>This is a novel game in which player's must make it to the finish line of each level before all the lights in the level go out. This was developed independently over a course of two weeks as the 2nd project of EECS 494 at the University of Michigan.
+      // By default Unity keeps WebGL canvas render target size matched with
+      // the DOM size of the canvas element (scaled by window.devicePixelRatio)
+      // Set this to false if you want to decouple this synchronization from
+      // happening inside the engine, and you would instead like to size up
+      // the canvas DOM size and WebGL render target sizes yourself.
+      // config.matchWebGLToCanvasSize = false;
 
-                                I used C# with Unity to develop the game.</p>
-							
-							<div id="unity-container" style="text-align: center;" class="unity-desktop">
-								<canvas id="unity-canvas" width=48 height=48></canvas>
-								<div id="unity-loading-bar">
-								<div id="unity-logo"></div>
-								<div id="unity-progress-bar-empty">
-									<div id="unity-progress-bar-full"></div>
-								</div>
-								</div>
-								<div id="unity-warning"> </div>
-								<div id="unity-footer">
-								<div id="unity-webgl-logo"></div>
-								<div id="unity-fullscreen-button"></div>
-								</div>
-							</div>							
-						</div>
-					</section>
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        // Mobile device style: fill the whole browser client area with the game canvas:
 
-			</div>
+        var meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+        document.getElementsByTagName('head')[0].appendChild(meta);
+        container.className = "unity-mobile";
+        canvas.className = "unity-mobile";
 
-	<!-- Game -->
-			<script>
-				var container = document.querySelector("#unity-container");
-				var canvas = document.querySelector("#unity-canvas");
-				var loadingBar = document.querySelector("#unity-loading-bar");
-				var progressBarFull = document.querySelector("#unity-progress-bar-full");
-				var fullscreenButton = document.querySelector("#unity-fullscreen-button");
-				var warningBanner = document.querySelector("#unity-warning");
-		
-				// Shows a temporary message banner/ribbon for a few seconds, or
-				// a permanent error message on top of the canvas if type=='error'.
-				// If type=='warning', a yellow highlight color is used.
-				// Modify or remove this function to customize the visually presented
-				// way that non-critical warnings and error messages are presented to the
-				// user.
-				function unityShowBanner(msg, type) {
-				function updateBannerVisibility() {
-					warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
-				}
-				var div = document.createElement('div');
-				div.innerHTML = msg;
-				warningBanner.appendChild(div);
-				if (type == 'error') div.style = 'background: red; padding: 10px;';
-				else {
-					if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
-					setTimeout(function() {
-					warningBanner.removeChild(div);
-					updateBannerVisibility();
-					}, 5000);
-				}
-				updateBannerVisibility();
-				}
-		
-				var buildUrl = "BuildLightsOut";
-				var loaderUrl = buildUrl + "/WebGL_Build_Disabled.loader.js";
-				var config = {
-				dataUrl: buildUrl + "/WebGL_Build_Disabled.data",
-				frameworkUrl: buildUrl + "/WebGL_Build_Disabled.framework.js",
-				codeUrl: buildUrl + "/WebGL_Build_Disabled.wasm",
-				streamingAssetsUrl: "StreamingAssetsLightsOut",
-				companyName: "DefaultCompany",
-				productName: "Legend of Zelda NES Remake",
-				productVersion: "1.0",
-				showBanner: unityShowBanner,
-				};
-		
-				// By default Unity keeps WebGL canvas render target size matched with
-				// the DOM size of the canvas element (scaled by window.devicePixelRatio)
-				// Set this to false if you want to decouple this synchronization from
-				// happening inside the engine, and you would instead like to size up
-				// the canvas DOM size and WebGL render target sizes yourself.
-				config.matchWebGLToCanvasSize = false;
-		
-				if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-				// Mobile device style: fill the whole browser client area with the game canvas:
-		
-				var meta = document.createElement('meta');
-				meta.name = 'viewport';
-				meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
-				document.getElementsByTagName('head')[0].appendChild(meta);
-				container.className = "unity-mobile";
-				canvas.className = "unity-mobile";
-		
-				// To lower canvas resolution on mobile devices to gain some
-				// performance, uncomment the following line:
-				// config.devicePixelRatio = 1;
-		
-				unityShowBanner('WebGL builds are not supported on mobile devices.');
-				} else {
-				// Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
-		
-				canvas.style.width = "440px";
-				canvas.style.height = "455px";
-				}
-		
-				loadingBar.style.display = "block";
-		
-				var script = document.createElement("script");
-				script.src = loaderUrl;
-				script.onload = () => {
-				createUnityInstance(canvas, config, (progress) => {
-					progressBarFull.style.width = 100 * progress + "%";
-				}).then((unityInstance) => {
-					loadingBar.style.display = "none";
-					fullscreenButton.onclick = () => {
-					unityInstance.SetFullscreen(1);
-					};
-				}).catch((message) => {
-					alert(message);
-				});
-				};
-				document.body.appendChild(script);
-			</script>
-	
-		<!-- Footer -->
-			<footer id="footer" class="wrapper alt">
-				<div class="inner">
-					<ul class="menu">
-						<li>&copy; Untitled. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
-					</ul>
-				</div>
-			</footer>
+        // To lower canvas resolution on mobile devices to gain some
+        // performance, uncomment the following line:
+        // config.devicePixelRatio = 1;
 
-		<!-- Scripts -->
-			<script src="assets/js/jquery.min.js"></script>
-			<script src="assets/js/jquery.scrollex.min.js"></script>
-			<script src="assets/js/jquery.scrolly.min.js"></script>
-			<script src="assets/js/browser.min.js"></script>
-			<script src="assets/js/breakpoints.min.js"></script>
-			<script src="assets/js/util.js"></script>
-			<script src="assets/js/main.js"></script>
+        unityShowBanner('WebGL builds are not supported on mobile devices.');
+      } else {
+        // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
 
-	</body>
+        canvas.style.width = "960px";
+        canvas.style.height = "600px";
+      }
+
+      loadingBar.style.display = "block";
+
+      var script = document.createElement("script");
+      script.src = loaderUrl;
+      script.onload = () => {
+        createUnityInstance(canvas, config, (progress) => {
+          progressBarFull.style.width = 100 * progress + "%";
+        }).then((unityInstance) => {
+          loadingBar.style.display = "none";
+          fullscreenButton.onclick = () => {
+            unityInstance.SetFullscreen(1);
+          };
+        }).catch((message) => {
+          alert(message);
+        });
+      };
+      document.body.appendChild(script);
+    </script>
+  </body>
 </html>
